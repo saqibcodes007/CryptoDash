@@ -32,7 +32,7 @@ function createDashboardWindow() {
     });
     mainWindow.loadFile('dashboard.html');
     // Forces the developer console to open for debugging
-    mainWindow.webContents.openDevTools();
+    //mainWindow.webContents.openDevTools();
 }
 
 function getPositionsFromPython(apiKey, apiSecret, baseUrl) {
