@@ -328,3 +328,19 @@ body.light-theme {
 .light-theme th, .light-theme td {
     border-bottom-color: #e0e0e0;
 }
+
+/* --- Footer Styles --- */
+footer {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    color: #6a7895; /* A slightly muted color for the dark theme */
+    font-size: 0.8em;
+    /* Ensures footer is not clickable and doesn't interfere with content */
+    pointer-events: none; 
+}
+
+.light-theme footer {
+    color: #999; /* A slightly muted color for the light theme */
+}
