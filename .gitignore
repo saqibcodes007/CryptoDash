@@ -1,0 +1,21 @@
+# Node.js dependencies
+node_modules
+
+# Python virtual environment
+venv
+
+# Python cache
+__pycache__/
+
+# NPM debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Electron-store settings file
+# CRITICAL: This file can contain saved API secrets. Never upload it.
+config.json
+
+# Operating System files
+.DS_Store
+Thumbs.db

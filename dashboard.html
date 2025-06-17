@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CryptDash - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1 class="title">CryptDash</h1>
+            <div class="header-controls">
+                <button id="reset-button" class="header-button">Reset Credentials</button>
+                <span id="status-indicator" class="status-dot"></span>
+                <span id="last-updated"></span>
+                <label class="theme-switch">
+                    <input type="checkbox" id="theme-toggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </header>
+        <main class="dashboard-main">
+            <section class="metrics-grid">
+                <div class="metric-card">
+                    <h4>Total Unrealised PNL</h4>
+                    <p id="total-pnl-value">-</p>
+                </div>
+                <div class="metric-card">
+                    <h4>PNL % (Avg)</h4>
+                    <p id="avg-pnl-percent">-</p>
+                </div>
+                <div class="metric-card">
+                    <h4>Total Margin Used</h4>
+                    <p id="total-margin-value">-</p>
+                </div>
+                <div class="metric-card chart-card">
+                    <h4>Portfolio Allocation</h4>
+                    <canvas id="pnlChart"></canvas>
+                </div>
+            </section>
+            <section id="positions-section">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Size</th>
+                                <th>Side</th>
+                                <th>Entry Price</th>
+                                <th>Mark Price</th>
+                                <th>Unrealised PNL</th>
+                                <th>PNL %</th>
+                                <th>Liq. Price</th>
+                            </tr>
+                        </thead>
+                        <tbody id="positions-table-body"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="./node_modules/chart.js/dist/chart.umd.js"></script>
+    <script src="dashboard_renderer.js"></script>
+</body>
+</html>

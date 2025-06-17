@@ -1,0 +1,19 @@
+{
+  "name": "cryptdash",
+  "version": "1.0.0",
+  "description": "Real-time Crypto Portfolio Dashboard",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^31.0.1"
+  },
+  "dependencies": {
+    "chart.js": "^4.5.0",
+    "electron-store": "^7.0.3"
+  }
+}

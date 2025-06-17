@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CryptDash - Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <h1 class="title">CryptDash</h1>
+            <p class="subtitle">Enter Delta Exchange API Credentials</p>
+
+            <div class="input-group">
+                <label for="apiKey">API Key</label>
+                <input type="password" id="apiKey" placeholder="Enter your API Key">
+            </div>
+
+            <div class="input-group">
+                <label for="apiSecret">API Secret</label>
+                <input type="password" id="apiSecret" placeholder="Enter your API Secret">
+            </div>
+
+            <div class="save-group">
+                <input type="checkbox" id="saveKeyCheck">
+                <label for="saveKeyCheck">Save Credentials</label>
+            </div>
+
+            <button id="connectBtn">Connect</button>
+        </div>
+    </div>
+    <script src="renderer.js"></script>
+</body>
+</html>
