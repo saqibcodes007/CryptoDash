@@ -1,9 +1,10 @@
-// dashboard_renderer.js (DEFINITIVELY CORRECTED)
-
-// NOTE: The incorrect 'require' line that was here has been removed.
+// dashboard_renderer.js (With corrected Tooltip logic)
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- All code now runs only after the HTML is fully loaded ---
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js failed to load. Please check the script tag in dashboard.html');
+        return;
+    }
 
     // --- DOM Element References ---
     const positionsTableBody = document.getElementById('positions-table-body');
@@ -21,15 +22,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let chartData = {
         labels: [],
         pnlHistory: [],
+        pnlAbsoluteHistory: []
     };
     const MAX_CHART_POINTS = 100;
 
     // --- Main Data Fetch and Display Function ---
     async function fetchAndDisplayData() {
-        if (!credentials) {
-            console.error("Credentials not loaded. Cannot fetch data.");
-            return;
-        }
+        if (!credentials) return;
         statusIndicator.classList.add('loading');
         try {
             const positions = await window.api.invoke('get-positions', credentials);
@@ -59,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             updateTable(positions);
             updateMetrics(positions, totalMargin, portfolioPnlPercent);
-            updateChart(portfolioPnlPercent);
+            updateChart(portfolioPnlPercent, totalPnl);
             lastUpdatedEl.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
         }
     }
@@ -108,34 +107,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function updateChart(currentPnlPercent) {
+    function updateChart(currentPnlPercent, currentPnlAbsolute) {
         const now = new Date();
         chartData.labels.push(now.toLocaleTimeString());
         chartData.pnlHistory.push(currentPnlPercent);
+        chartData.pnlAbsoluteHistory.push(currentPnlAbsolute);
 
         if (chartData.labels.length > MAX_CHART_POINTS) {
             chartData.labels.shift();
             chartData.pnlHistory.shift();
+            chartData.pnlAbsoluteHistory.shift();
         }
 
         if (pnlChart) {
-            pnlChart.data.labels = chartData.labels;
-            pnlChart.data.datasets[0].data = chartData.pnlHistory;
-            pnlChart.update('none'); // Use 'none' for a smoother update
+            pnlChart.update('none');
         } else {
             createLineChart();
         }
     }
 
     function createLineChart() {
-        if (pnlChart) {
-            pnlChart.destroy();
-        }
+        if (pnlChart) pnlChart.destroy();
+
         const isLightTheme = document.body.classList.contains('light-theme');
         const labelColor = isLightTheme ? '#333' : '#e0e0e0';
         const gridColor = isLightTheme ? '#ddd' : '#2a2a4a';
         
-        // The global 'Chart' object is available here because we load it in dashboard.html
         pnlChart = new Chart(chartCanvas, {
             type: 'line',
             data: {
@@ -147,34 +144,47 @@ document.addEventListener('DOMContentLoaded', () => {
                     backgroundColor: 'rgba(0, 194, 255, 0.2)',
                     borderColor: 'rgba(0, 194, 255, 1)',
                     borderWidth: 2,
-                    pointRadius: 0, // Hide points for a cleaner line
+                    pointRadius: 1,
+                    pointHoverRadius: 5,
+                    pointHitRadius: 10,
                     tension: 0.4
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                interaction: { // This ensures tooltips appear on hover
+                    mode: 'index',
+                    intersect: false,
+                },
                 scales: {
-                    y: {
-                        ticks: { 
-                            color: labelColor,
-                            callback: function(value) { return value.toFixed(2) + '%' }
-                        },
-                        grid: { color: gridColor }
-                    },
-                    x: {
-                        ticks: { color: labelColor },
-                        grid: { display: false }
-                    }
+                    y: { ticks: { color: labelColor, callback: (value) => `${value.toFixed(2)}%` }, grid: { color: gridColor } },
+                    x: { ticks: { color: labelColor }, grid: { display: false } }
                 },
                 plugins: {
-                    legend: { display: false }
+                    legend: { display: false },
+                    // CORRECTED TOOLTIP CONFIGURATION
+                    tooltip: {
+                        callbacks: {
+                            // This function formats the text inside the tooltip
+                            label: function(context) {
+                                const index = context.dataIndex;
+                                const pnlPct = chartData.pnlHistory[index] || 0;
+                                const pnlAbs = chartData.pnlAbsoluteHistory[index] || 0;
+                                
+                                const line1 = ` PNL: ${pnlPct.toFixed(2)}%`;
+                                const line2 = `      ${pnlAbs.toFixed(4)} USD`;
+                                
+                                return [line1, line2]; // Return an array for multi-line tooltips
+                            }
+                        }
+                    }
                 }
             }
         });
     }
 
-    // --- Event Listeners ---
+    // --- Event Listeners and Initializers ---
     resetButton.addEventListener('click', () => {
         window.api.send('reset-app');
     });
@@ -183,10 +193,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.toggle('light-theme');
         const currentTheme = document.body.classList.contains('light-theme') ? 'light' : 'dark';
         window.api.send('save-theme', currentTheme);
-        createLineChart(); // Redraw chart for new theme
+        createLineChart();
     });
 
-    // --- Initializer ---
     async function initializeDashboard() {
         const savedTheme = await window.api.invoke('load-theme');
         if (savedTheme === 'light') {
@@ -204,6 +213,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Kick everything off
     initializeDashboard();
 });
